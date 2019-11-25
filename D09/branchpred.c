@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 
    
   
-#ifdef WOW
+#ifdef WOW   
   tot_tstart = TCPU_TIME;
   // !!! With this, the next loop runs faster
   qsort(data, SIZE, sizeof(int), compare);

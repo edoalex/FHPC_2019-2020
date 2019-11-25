@@ -19,7 +19,7 @@
 #define DEFAULT_ARG1 100
 #define PI           3.14159265358979323846
 
-#define CHECK_VALUE( V, P ) if ( (V) != ctrl_value ) printf("something wrong at point %d\n", P)
+#define CHECK_VALUE( V, P ) if ( (V) != ctrl_value ) printf("something wrong at point %d\n", P)  // it's a MACRO
 
 /*
  * +-------------------------------------+

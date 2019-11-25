@@ -83,7 +83,7 @@ typedef struct
 
 
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   STRUCT_A   arrayA[2];
   STRUCT_Ap  arrayAp[2];
@@ -92,7 +92,7 @@ void main(int argc, char **argv)
   STRUCT_C   arrayC[2];
   STRUCT_D   arrayD[2];
 
-  int        i, mode;
+  int        mode;
 
   if(argc < 2)
     mode = 0;
@@ -101,8 +101,8 @@ void main(int argc, char **argv)
   
   printf("\n"
 	 "arrayA begins at %p, size of STRUCT_A is %zd, memory displacement among array elements is %zd\n",
-	 arrayA, sizeof(STRUCT_A), (void*)&arrayA[1] - (void*)&arrayA[0]);
-  printf("\t%18s%3zd\n\t%18s%3zd\n\t%18s%3zd\n\t%18s%3zd\n\n",
+	 arrayA, sizeof(STRUCT_A), (void*)&arrayA[1] - (void*)&arrayA[0]);      // if I do (&arrayA[1] - &arrayA[0]) it gives 1, cause it's in type(double) units
+  printf("\t%18s%3zd\n\t%18s%3zd\n\t%18s%3zd\n\t%18s%3zd\n\n",                  // while if I cast to void or char, the units are in byte
 	 "char_field at ",   (void*)&arrayA[0].char_field   - (void*)&arrayA[0],
 	 "double_field at ", (void*)&arrayA[0].double_field - (void*)&arrayA[0],
 	 "int_field at ",    (void*)&arrayA[0].int_field    - (void*)&arrayA[0],
@@ -121,7 +121,7 @@ void main(int argc, char **argv)
 	     "char_field2 at ",  (void*)&arrayAp[0].char_field2  - (void*)&arrayAp[0]);
       
       printf("\n"
-	     "arrayApp begins at %p, size of STRUCT_Ap is %zd, memory displacement among array elements is %zd\n",
+	     "arrayApp begins at %p, size of STRUCT_App is %zd, memory displacement among array elements is %zd\n",
 	     arrayApp, sizeof(STRUCT_App), (void*)&arrayApp[1] - (void*)&arrayApp[0]);
       printf("\t%18s%3zd\n\t%18s%3zd\n\t%18s%3zd\n\t%18s%3zd\n\n",
 	     "char_field at ",   (void*)&arrayApp[0].char_field   - (void*)&arrayApp[0],
@@ -159,5 +159,5 @@ void main(int argc, char **argv)
 
 
   
-  return;
+  return 0;
 }
