@@ -1,0 +1,15 @@
+#include <omp.h>
+#include <iostream>
+
+
+int main(){
+  unsigned int N = 10; 
+  x =  (double*)calloc( N, sizeof(double) );
+
+  for(unsigned int i=0; i<n; i++)
+    x[i] = i;
+
+  printf(x);
+
+  return 0;
+}
