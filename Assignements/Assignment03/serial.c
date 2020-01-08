@@ -23,7 +23,7 @@
 		  (double)ts.tv_nsec * 1e-9)
 #endif
 
-#define I_max_default 300
+#define I_max_default 32766
 #define x_L_default -2.5
 #define y_L_default -1.25
 #define x_R_default 1
