@@ -70,7 +70,7 @@ int main( int argc, char **argv )
   if ( places != NULL )
     printf("\nOMP_PLACES is set to %s\n", places);
   if ( bind != NULL )
-    printf("OMP_PROC_BINDING is set to %s\n", bind);
+    printf("OMP_PROC_BIND is set to %s\n", bind);
 
 #pragma omp parallel
   {

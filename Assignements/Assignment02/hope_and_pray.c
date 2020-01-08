@@ -109,7 +109,7 @@ int main(int argc, char* argv[]){
 
 
 
-
+   /*
 
 
 
@@ -162,7 +162,7 @@ int main(int argc, char* argv[]){
 
 
 
-
+   */
 
 
 
@@ -174,15 +174,15 @@ int main(int argc, char* argv[]){
   double t_end  = CPU_TIME;
 
    printf("\nFinal element: \t\t %d \t(expected one:\t%lld)\n", y[N-1], N);
-   //printf("Parallel wall-time: \t%f s\n\n", t_end - t_start);
+   printf("Parallel wall-time: \t%f s\n\n", t_end - t_start);
 
-  free(y);
+   free(y);
 
 #if defined(_OPENMP)
-   for(unsigned int level=0; level <= max_split; level++)
-     free(pyramid[level]);   
-   free(pyramid);
-   free(level_length);
+   //   for(unsigned int level=0; level <= max_split; level++)
+   //  free(pyramid[level]);   
+   //free(pyramid);
+   //free(level_length);
 #endif
    
   return 0;
