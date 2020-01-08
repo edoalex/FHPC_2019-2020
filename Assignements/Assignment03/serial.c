@@ -142,7 +142,7 @@ unsigned char compute_mandelbrot(const double c_x, const double c_y, short int I
   double mod_sq=0;
   short int iteration=0;
 
-  while( ( mod_sq<4 ) && (iteration <= I_max) ){
+  while( ( mod_sq<4 ) && (iteration < I_max) ){
     y = 2*x*y + c_y;
     x = 2*x*x - mod_sq + c_x;    // a bit of math to get here (avoiding creation of a temp variable)
     mod_sq = x*x +y*y;
