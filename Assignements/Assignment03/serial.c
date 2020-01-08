@@ -25,9 +25,9 @@
 
 #define I_max_default 300
 #define x_L_default -2.5
-#define y_L_default -1
+#define y_L_default -1.25
 #define x_R_default 1
-#define y_R_default 1
+#define y_R_default 1.25
 #define n_x_default 3000
 #define n_y_default 2000
 #define MAX 32767
@@ -104,6 +104,15 @@ int main(int argc, char* argv[]){
   //             drawing image
   //-----------------------------------
 
+  /*  for(unsigned int i=0; i<n_y; ++i){
+    for(unsigned int j=0; j<n_x; ++j){
+      printf("%d ", matrix[i*n_x + j]);
+    }
+    printf("\n");
+  }
+  */
+
+
   void* ptr = (void*)matrix;
   write_pgm_image( ptr, I_max, n_x, n_y, "image.pgm" );
   free(matrix);
@@ -139,7 +148,7 @@ short int compute_mandelbrot(const double c_x, const double c_y, short int I_max
     mod_sq = x*x +y*y;
     ++iteration;
   }
-  //  iteration = (iteration >= I_max) ? 0 : iteration;
+  iteration = (iteration >= I_max) ? 0 : iteration;
 
   return iteration;
 }
