@@ -30,10 +30,10 @@
 #define y_R_default 1.25
 #define n_x_default 3000
 #define n_y_default 2000
-#define MAX 32767
+#define MAX 255
 
 void write_pgm_image( void *image, int maxval, int xsize, int ysize, const char *image_name);
-short int compute_mandelbrot(const double c_x, const double c_y, short int I_max);
+unsigned char compute_mandelbrot(const double c_x, const double c_y, short int I_max);
 
 //to do: remove openmp standards
 int main(int argc, char* argv[]){
@@ -80,10 +80,10 @@ int main(int argc, char* argv[]){
   //               computing
   //-----------------------------------
 
-  short int* matrix;
+  unsigned char* matrix;
 
-  if( (matrix = (short int*)malloc( n_x * n_y * sizeof(short int))) == NULL){
-      printf("I'm sorry, there is not enough memory to host %s bytes\n\n", n_x * n_y * sizeof(double));
+  if( (matrix = (unsigned char*)calloc( n_x * n_y, sizeof(unsigned char))) == NULL){
+      printf("I'm sorry, there is not enough memory to host %s bytes\n\n", n_x * n_y * sizeof(unsigned char));
       return 1;
     }
 
@@ -136,7 +136,7 @@ void write_pgm_image( void *image, int maxval, int xsize, int ysize, const char 
   return;
 }
 
-short int compute_mandelbrot(const double c_x, const double c_y, short int I_max){
+unsigned char compute_mandelbrot(const double c_x, const double c_y, short int I_max){
   double x=0;
   double y=0;
   double mod_sq=0;
@@ -150,5 +150,6 @@ short int compute_mandelbrot(const double c_x, const double c_y, short int I_max
   }
   iteration = (iteration >= I_max) ? 0 : iteration;
 
-  return iteration;
+  unsigned char ret = iteration;
+  return ret;
 }
