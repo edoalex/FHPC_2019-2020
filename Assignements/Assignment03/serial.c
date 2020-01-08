@@ -1,3 +1,4 @@
+
 #if defined(__STDC__)
 #  if (__STDC_VERSION__ >= 199901L)
 #     define _XOPEN_SOURCE 700
@@ -24,9 +25,9 @@
 
 #define I_max_default 300
 #define x_L_default -2.5
-#define y_L_default -1.5
+#define y_L_default -1.25
 #define x_R_default 1
-#define y_R_default 1.5
+#define y_R_default 1.25
 #define n_x_default 3000
 #define n_y_default 2000
 #define MAX 32767
@@ -138,7 +139,7 @@ short int compute_mandelbrot(const double c_x, const double c_y, short int I_max
     mod_sq = x*x +y*y;
     ++iteration;
   }
-  iteration = (iteration >= I_max) ? 0 : iteration;
+  //  iteration = (iteration >= I_max) ? 0 : iteration;
 
   return iteration;
 }
