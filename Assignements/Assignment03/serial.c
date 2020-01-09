@@ -148,7 +148,7 @@ unsigned char compute_mandelbrot(const double c_x, const double c_y, short int I
     mod_sq = x*x +y*y;
     ++iteration;
   }
-  //iteration = (iteration >= I_max) ? 0 : iteration;
+  iteration = (iteration == I_max) ? 0 : iteration;
 
   unsigned char ret = iteration;
   return ret;
