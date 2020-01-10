@@ -136,7 +136,7 @@ int main( int argc, char **argv )
 #pragma omp single nowait
     {
       
-      #pragma omp task firstprivate(N) shared(result1)
+#pragma omp task firstprivate(N) shared(result1)
       {
 	double myresult = 0;
 	for( int jj = 0; jj < N; jj++ )
@@ -144,7 +144,7 @@ int main( int argc, char **argv )
 	result1 += myresult;	    	
       }
 
-      #pragma omp  task firstprivate(N) shared(result2)
+#pragma omp  task firstprivate(N) shared(result2)
       {
 	double myresult = 0;
 	for( int jj = 0; jj < N; jj++ )
@@ -152,7 +152,7 @@ int main( int argc, char **argv )
 	result2 += myresult;	    
       }
 
-      #pragma omp task  firstprivate(N) shared(result3)
+#pragma omp task firstprivate(N) shared(result3)
       {
 	double myresult = 0;
 	for( int jj = 0; jj < N; jj++ )
@@ -162,7 +162,7 @@ int main( int argc, char **argv )
 
     }
 
-    //#pragma omp taskwait
+    #pragma omp taskwait
     
     #pragma omp atomic update
     result += result1;
