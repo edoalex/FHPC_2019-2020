@@ -70,21 +70,19 @@ int main(int argc, char * argv[]){
   int im_ready_tag = 0;
   int workpile_tag = 1;
   int finish_tag = 42;
-  int root = 0;
-  int header_offset;
 
+  int header_offset;
   // write header in pgm file
   if(myid == 0){
     header_offset = write_pgm_header(I_max, n_x, n_y, "image.pgm");
   }
 
+  int root = 0;
   MPI_Bcast(&header_offset, 1, MPI_INT, root, MPI_COMM_WORLD);
-  // remove MPI_MODE_CREATE
-  MPI_File_open(MPI_COMM_WORLD, "image.pgm", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &file);
+  MPI_File_open(MPI_COMM_WORLD, "image.pgm", MPI_MODE_WRONLY, MPI_INFO_NULL, &file);
 
   if(myid == 0){
     printf("n_x=%d \tn_y=%d \tx_L=%f \ty_L=%f \tx_R=%f \ty_R=%f \tI_max=%d \n", n_x, n_y, x_L, y_L, x_R, y_R, I_max);
-    //MPI_File_write_at(file, 0, header, count, , &status);
     int line = 0;
     int worker;
     while(line < n_y ){
