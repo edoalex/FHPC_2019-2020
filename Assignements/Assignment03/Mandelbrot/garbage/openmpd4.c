@@ -28,20 +28,37 @@
 #define y_L_default -1.25
 #define x_R_default 1
 #define y_R_default 1.25
-#define n_x_default 3000
-#define n_y_default 2000
+#define n_x_default 4500
+#define n_y_default 3000
 #define MAX 255
 
+int get_cpu_id( void );
 void write_pgm_image( void *image, int maxval, int xsize, int ysize, const char *image_name);
 unsigned char compute_mandelbrot(const double c_x, const double c_y, short int I_max);
 
 int main(int argc, char* argv[]){
+  struct  timespec ts;
   double x_L, x_R, y_L, y_R;
   int n_x, n_y;
   short int I_max;
 
 #if defined(_OPENMP)
 
+  int nthreads;
+#pragma omp parallel
+  {
+#pragma omp master
+    {
+      nthreads = omp_get_num_threads();
+      printf("\nomp summation with %d threads\n", nthreads );
+    }
+    int me = omp_get_thread_num();
+#pragma omp critical
+    {
+      printf("thread %2d is running on core %2d\n", me, get_cpu_id() );
+    }
+  }
+  
   //----------------------------------
   //       setting parameters
   //----------------------------------
@@ -92,10 +109,11 @@ int main(int argc, char* argv[]){
   double delta_y = (y_R - y_L)/(n_y - 1);
   double x, y;
 
+#pragma omp parallel for collapse(2) schedule(dynamic, (n_x*n_y/nthreads)/4 )
   for(unsigned int i=0; i<n_y; ++i){
-    y = y_R - i*delta_y;
     for(unsigned int j=0; j<n_x; ++j){
       // work with matrix[i*n_x + j] that is matrix[i][y]
+      y = y_R - i*delta_y;
       x = x_L + j*delta_x;
       matrix[i*n_x + j] = compute_mandelbrot(x, y, I_max);
     }
@@ -115,7 +133,7 @@ int main(int argc, char* argv[]){
 
 
   void* ptr = (void*)matrix;
-  write_pgm_image( ptr, I_max, n_x, n_y, "image.pgm" );
+  //  write_pgm_image( ptr, I_max, n_x, n_y, "image.pgm" );
   free(matrix);
 
   return 0;
@@ -160,4 +178,33 @@ unsigned char compute_mandelbrot(const double c_x, const double c_y, short int I
 
   unsigned char ret = iteration;
   return ret;
+}
+
+int get_cpu_id( void )
+{
+#if defined(_GNU_SOURCE)                              // GNU SOURCE ------------
+  
+  return  sched_getcpu( );
+
+#else
+
+#ifdef SYS_getcpu                                     //     direct sys call ---
+  
+  int cpuid;
+  if ( syscall( SYS_getcpu, &cpuid, NULL, NULL ) == -1 )
+    return -1;
+  else
+    return cpuid;
+  
+#else      
+
+  unsigned val;
+  if ( read_proc__self_stat( CPU_ID_ENTRY_IN_PROCSTAT, &val ) == -1 )
+    return -1;
+
+  return (int)val;
+
+#endif                                                // -----------------------
+#endif
+
 }

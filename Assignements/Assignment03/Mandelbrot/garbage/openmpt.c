@@ -30,7 +30,7 @@
 #define y_R_default 1.25
 #define n_x_default 4500
 #define n_y_default 3000
-#define BEST_CHUNK_SIZE 10
+#define MAX 255
 
 int get_cpu_id( void );
 void write_pgm_image( void *image, int maxval, int xsize, int ysize, const char *image_name);
@@ -77,7 +77,12 @@ int main(int argc, char* argv[]){
     y_L = atof(argv[4]);
     x_R = atof(argv[5]);
     y_R = atof(argv[6]);
-    I_max = atoi(argv[7]);
+    if(atoi(argv[7]) > MAX){
+      printf("I_max given %d is too large, it will be set to %d\n", atoi(argv[7]), I_max_default);
+      I_max = I_max_default;
+    }
+    else
+      I_max = atoi(argv[7]);
   }
   else{
     x_R = x_R_default;
@@ -104,13 +109,16 @@ int main(int argc, char* argv[]){
   double delta_y = (y_R - y_L)/(n_y - 1);
   double x, y;
 
-#pragma omp parallel for collapse(2) schedule(dynamic, (n_x*n_y/nthreads)/ BEST_CHUNK_SIZE)
+#pragma omp parallel for collapse(2)
   for(unsigned int i=0; i<n_y; ++i){
     for(unsigned int j=0; j<n_x; ++j){
       // work with matrix[i*n_x + j] that is matrix[i][y]
       y = y_R - i*delta_y;
       x = x_L + j*delta_x;
+#pragma omp task
+      {
       matrix[i*n_x + j] = compute_mandelbrot(x, y, I_max);
+      }
     }
   }
 
