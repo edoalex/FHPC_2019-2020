@@ -96,7 +96,7 @@ int main(int argc, char* argv[]){
   unsigned char* matrix;
 
   if( (matrix = (unsigned char*)calloc( n_x * n_y, sizeof(unsigned char))) == NULL){
-      printf("I'm sorry, there is not enough memory to host %s bytes\n\n", n_x * n_y * sizeof(unsigned char));
+      printf("I'm sorry, there is not enough memory to host %ld bytes\n\n", n_x * n_y * sizeof(unsigned char));
       return 1;
     }
 
