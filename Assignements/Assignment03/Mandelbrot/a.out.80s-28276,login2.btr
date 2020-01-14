@@ -1,5 +1,0 @@
-
-a.out:28276 terminated with signal 11 at PC=4012fc SP=7ffd7956f970.  Backtrace:
-a.out[0x4012fc]
-/lib64/libc.so.6(__libc_start_main+0xfd)[0x355541ed5d]
-a.out[0x400c59]

@@ -128,7 +128,7 @@ int main(int argc, char* argv[]){
 
 
   void* ptr = (void*)matrix;
-  //  write_pgm_image( ptr, I_max, n_x, n_y, "image.pgm" );
+  write_pgm_image( ptr, I_max, n_x, n_y, "image.pgm" );
   free(matrix);
 
   return 0;
