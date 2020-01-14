@@ -22,6 +22,7 @@
 #define n_x_default 4200
 #define n_y_default 3000
 
+int get_cpu_id( void );
 int write_pgm_header(int maxval, int xsize, int ysize, const char *image_name);
 unsigned char compute_mandelbrot(const double c_x, const double c_y, short int I_max);
 int main(int argc, char * argv[]){
@@ -108,6 +109,14 @@ int main(int argc, char * argv[]){
     double delta_x = (x_R - x_L)/(n_x - 1);
     double delta_y = (y_R - y_L)/(n_y - 1);
 
+#pragma omp parallel num_threads(4)
+    {
+      int all = omp_get_num_threads();
+      int me = omp_get_thread_num();
+      printf("I'm thread %d/%d of process %d/%d and i'm running on core %d\n", me, all, myid, numproc, get_cpu_id());
+    }
+
+
     while( 1 ){
       // say to master you're ready to work
       MPI_Send(&myid, 1, MPI_INT, root, im_ready_tag, MPI_COMM_WORLD);
@@ -118,8 +127,9 @@ int main(int argc, char * argv[]){
       }
       // work with line_num
       y = y_R - line_num * delta_y;
-#pragma openmp parallel num_threads(2) for schedule(guided)
+#pragma omp parallel num_threads(2)
       {
+#pragma omp for schedule(guided)
         for(unsigned int i = 0; i < n_x; ++i){
   	  x = x_L + i*delta_x;
 	  line[i] = compute_mandelbrot(x, y, I_max);
@@ -167,4 +177,34 @@ int write_pgm_header(int maxval, int xsize, int ysize, const char *image_name)
   length = fprintf(image_file, "P5\n%d %d\n%d\n", xsize, ysize, maxval);  
   fclose(image_file); 
   return length;
+}
+
+
+int get_cpu_id( void )
+{
+#if defined(_GNU_SOURCE)                              // GNU SOURCE ------------
+  
+  return  sched_getcpu( );
+
+#else
+
+#ifdef SYS_getcpu                                     //     direct sys call ---
+  
+  int cpuid;
+  if ( syscall( SYS_getcpu, &cpuid, NULL, NULL ) == -1 )
+    return -1;
+  else
+    return cpuid;
+  
+#else      
+
+  unsigned val;
+  if ( read_proc__self_stat( CPU_ID_ENTRY_IN_PROCSTAT, &val ) == -1 )
+    return -1;
+
+  return (int)val;
+
+#endif                                                // -----------------------
+#endif
+
 }
