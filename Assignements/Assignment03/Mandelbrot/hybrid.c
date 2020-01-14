@@ -21,6 +21,15 @@
 #define y_R_default 1.25
 #define n_x_default 4200
 #define n_y_default 3000
+#define N_THREADS_PER_PROCESS 3
+
+//----------------------------------------------------------------------------------------
+//        this hybrid version will exploit p processes, each of which will spawn 
+//        N_THREADS_PER_PROCESS threads. To make things more interesting, 
+//        N_THREADS_PER_PROCESS lines of pixel have been assigned as a "pack of job"
+//        to a process in a master call. In this way the time taken for a process to 
+//        complete the job will be the same as in the simpler MPI version of this code.
+//----------------------------------------------------------------------------------------
 
 int get_cpu_id( void );
 int write_pgm_header(int maxval, int xsize, int ysize, const char *image_name);
@@ -81,6 +90,7 @@ int main(int argc, char * argv[]){
   int im_ready_tag = 0;
   int workpile_tag = 1;
   int finish_tag = 42;
+  int ntpp = N_THREADS_PER_PROCESS;
 
   double start_t, end_t;
   start_t = MPI_Wtime();
@@ -109,13 +119,14 @@ int main(int argc, char * argv[]){
     double delta_x = (x_R - x_L)/(n_x - 1);
     double delta_y = (y_R - y_L)/(n_y - 1);
 
+    /*
 #pragma omp parallel num_threads(4)
     {
       int all = omp_get_num_threads();
       int me = omp_get_thread_num();
       printf("I'm thread %d/%d of process %d/%d and i'm running on core %d\n", me, all, myid, numproc, get_cpu_id());
     }
-
+    */
 
     while( 1 ){
       // say to master you're ready to work
