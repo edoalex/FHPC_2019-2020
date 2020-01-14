@@ -28,7 +28,7 @@
 #define y_L_default -1.25
 #define x_R_default 1
 #define y_R_default 1.25
-#define n_x_default 4500
+#define n_x_default 4200
 #define n_y_default 3000
 #define BEST_CHUNK_SIZE 10
 
