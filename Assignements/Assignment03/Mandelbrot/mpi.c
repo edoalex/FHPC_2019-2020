@@ -18,7 +18,7 @@
 #define y_L_default -1.25
 #define x_R_default 1
 #define y_R_default 1.25
-#define n_x_default 4500
+#define n_x_default 4200
 #define n_y_default 3000
 
 int write_pgm_header(int maxval, int xsize, int ysize, const char *image_name);
@@ -63,14 +63,7 @@ int main(int argc, char * argv[]){
   MPI_Comm_rank(MPI_COMM_WORLD, &myid);
 
   MPI_File file;
-  double start_t, end_t;
-  start_t = MPI_Wtime();
-  
-  // define some dummy variables to make code more readable
-  int im_ready_tag = 0;
-  int workpile_tag = 1;
-  int finish_tag = 42;
-
+    
   int header_offset;
   // write header in pgm file
   if(myid == 0){
@@ -81,8 +74,16 @@ int main(int argc, char * argv[]){
   MPI_Bcast(&header_offset, 1, MPI_INT, root, MPI_COMM_WORLD);
   MPI_File_open(MPI_COMM_WORLD, "image.pgm", MPI_MODE_WRONLY, MPI_INFO_NULL, &file);
 
+  // define some dummy variables to make code more readable   
+  int im_ready_tag = 0;
+  int workpile_tag = 1;
+  int finish_tag = 42;
+
+  double start_t, end_t;
+  start_t = MPI_Wtime();
+
   if(myid == 0){
-    printf("n_x=%d \tn_y=%d \tx_L=%f \ty_L=%f \tx_R=%f \ty_R=%f \tI_max=%d \n", n_x, n_y, x_L, y_L, x_R, y_R, I_max);
+    // printf("n_x=%d \tn_y=%d \tx_L=%f \ty_L=%f \tx_R=%f \ty_R=%f \tI_max=%d \n", n_x, n_y, x_L, y_L, x_R, y_R, I_max);
     int line = 0;
     int worker;
     while(line < n_y ){

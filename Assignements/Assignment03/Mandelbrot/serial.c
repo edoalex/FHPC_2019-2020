@@ -28,8 +28,8 @@
 #define y_L_default -1.25
 #define x_R_default 1
 #define y_R_default 1.25
-#define n_x_default 3000
-#define n_y_default 2000
+#define n_x_default 4500
+#define n_y_default 3000
 #define MAX 255
 
 void write_pgm_image( void *image, int maxval, int xsize, int ysize, const char *image_name);
