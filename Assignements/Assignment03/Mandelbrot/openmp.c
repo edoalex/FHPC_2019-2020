@@ -13,6 +13,7 @@
 #include <sys/syscall.h>
 #include <sched.h>
 #include <omp.h>
+#include <math.h>
 
 #if defined(_OPENMP)
 #define CPU_TIME (clock_gettime( CLOCK_REALTIME, &ts ), (double)ts.tv_sec + \
@@ -66,6 +67,10 @@ int main(int argc, char* argv[]){
   if(argc>2){
     n_x = atoi(argv[1]);
     n_y = atoi(argv[2]);
+    if( (n_x < 2) || (n_y < 2)){
+      printf("Parameters must be >= 2\n");
+      return 1;
+    }
   }
   else{
     n_x = n_x_default;
@@ -103,8 +108,9 @@ int main(int argc, char* argv[]){
   double delta_x = (x_R - x_L)/(n_x - 1);
   double delta_y = (y_R - y_L)/(n_y - 1);
   double x, y;
-
-#pragma omp parallel for collapse(2) schedule(dynamic, (n_x*n_y/nthreads)/ BEST_CHUNK_DIVIDER)
+  int chunk =  ceil((double)(n_x*n_y/nthreads)/BEST_CHUNK_DIVIDER);
+  
+#pragma omp parallel for collapse(2) schedule(dynamic, chunk)
   for(unsigned int i=0; i<n_y; ++i){
     for(unsigned int j=0; j<n_x; ++j){
       // work with matrix[i*n_x + j] that is matrix[i][y]

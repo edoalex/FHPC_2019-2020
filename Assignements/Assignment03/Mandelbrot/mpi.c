@@ -83,7 +83,7 @@ int main(int argc, char * argv[]){
   start_t = MPI_Wtime();
 
   if(myid == 0){
-    // printf("n_x=%d \tn_y=%d \tx_L=%f \ty_L=%f \tx_R=%f \ty_R=%f \tI_max=%d \n", n_x, n_y, x_L, y_L, x_R, y_R, I_max);
+    printf("n_x=%d \tn_y=%d \tx_L=%f \ty_L=%f \tx_R=%f \ty_R=%f \tI_max=%d \n", n_x, n_y, x_L, y_L, x_R, y_R, I_max);
     int line = 0;
     int worker;
     while(line < n_y ){
@@ -129,7 +129,7 @@ int main(int argc, char * argv[]){
   
   end_t = MPI_Wtime();
 
-  printf("I'm %d out of %d\t time: %f\n", myid, numproc, end_t - start_t);
+  printf("I'm process %d out of %d\t time: %f\n", myid, numproc, end_t - start_t);
   MPI_File_close(&file);
   MPI_Finalize();
   return 0;

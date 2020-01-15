@@ -27,8 +27,7 @@
 //        this hybrid version will exploit p processes, each of which will spawn 
 //        N_THREADS_PER_PROCESS threads. To make things more interesting, 
 //        N_THREADS_PER_PROCESS lines of pixel have been assigned as a "pack of job"
-//        to a process in a master call. In this way the time taken for a process to 
-//        complete the job will be the same as in the simpler MPI version of this code.
+//        to a process in a master call. In this way the communication costs are reduced
 //----------------------------------------------------------------------------------------
 
 int get_cpu_id( void );
@@ -96,7 +95,7 @@ int main(int argc, char * argv[]){
   start_t = MPI_Wtime();
 
   if(myid == 0){
-    // printf("n_x=%d \tn_y=%d \tx_L=%f \ty_L=%f \tx_R=%f \ty_R=%f \tI_max=%d \n", n_x, n_y, x_L, y_L, x_R, y_R, I_max);
+    printf("n_x=%d \tn_y=%d \tx_L=%f \ty_L=%f \tx_R=%f \ty_R=%f \tI_max=%d \n", n_x, n_y, x_L, y_L, x_R, y_R, I_max);
     int* line = (int*)malloc( 2 * sizeof(int));      // line[0] will contain the number of the first line to compute
     line[0] = 0;      // line[1] will contain the number of lines to compute
     line[1] = ntpp;
@@ -122,8 +121,9 @@ int main(int argc, char * argv[]){
     }
   }
   else{
-    int* line = (int*)malloc( 2 * sizeof(int)); // line[0] will contain the number of the first line to compute 
-                 // line[1] will contain the number of lines to compute          
+    int* line = (int*)malloc( 2 * sizeof(int));
+    // line[0] will contain the number of the first line to compute 
+    // line[1] will contain the number of lines to compute          
     unsigned char* buffer = (unsigned char*)malloc( ntpp*n_x*sizeof(unsigned char) );
     double x, y;
     double delta_x = (x_R - x_L)/(n_x - 1);
@@ -167,7 +167,7 @@ int main(int argc, char * argv[]){
   
   end_t = MPI_Wtime();
 
-  printf("I'm %d out of %d\t time: %f\n", myid, numproc, end_t - start_t);
+  printf("I'm process %d out of %d\t time: %f\n", myid, numproc, end_t - start_t);
   MPI_File_close(&file);
   MPI_Finalize();
   return 0;
