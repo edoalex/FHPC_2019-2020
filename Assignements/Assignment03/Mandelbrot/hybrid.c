@@ -149,7 +149,7 @@ int main(int argc, char * argv[]){
       // work from line line[0] until line ( line[0] + line[1] - 1 )
 #pragma omp parallel num_threads(ntpp)
 	  {
-#pragma omp for schedule(guided)
+#pragma omp for schedule(guided) collapse(2)
 	for(unsigned int j=0; j < line[1]; j++){
 	  for(unsigned int i = 0; i < n_x; ++i){
 	    y = y_R - (line[0]+j) * delta_y;
