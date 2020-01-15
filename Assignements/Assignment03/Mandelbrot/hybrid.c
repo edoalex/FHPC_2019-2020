@@ -97,15 +97,22 @@ int main(int argc, char * argv[]){
 
   if(myid == 0){
     // printf("n_x=%d \tn_y=%d \tx_L=%f \ty_L=%f \tx_R=%f \ty_R=%f \tI_max=%d \n", n_x, n_y, x_L, y_L, x_R, y_R, I_max);
-    int line = 0;
+    int* line = (int*)malloc( 2 * sizeof(int));      // line[0] will contain the number of the first line to compute
+    line[0] = 0;      // line[1] will contain the number of lines to compute
+    line[1] = ntpp;
     int worker;
-    while(line < n_y ){
+    while(line[0] < n_y - ntpp + 1 ){
     // listen who says 'Im ready'
     MPI_Recv(&worker, 1, MPI_INT, MPI_ANY_SOURCE, im_ready_tag, MPI_COMM_WORLD, &status);
-    // send him line line to work on
-    MPI_Send(&line, 1, MPI_INT, worker, workpile_tag, MPI_COMM_WORLD);
-    ++line;
+    // send him ntpp lines to work on, starting from number=line[0]
+    MPI_Send(line, 2, MPI_INT, worker, workpile_tag, MPI_COMM_WORLD);
+    line[0] += ntpp;
     }
+    //send the final remaining (line[0] - n_y) < ntpp  lines to next and last process
+    line[0] -= 4;
+    line[1] = line[0] - n_y;
+    MPI_Recv(&worker, 1, MPI_INT, MPI_ANY_SOURCE, im_ready_tag, MPI_COMM_WORLD, &status);
+    MPI_Send(&line, 2, MPI_INT, worker, workpile_tag, MPI_COMM_WORLD);
     // send message with special tag to say we're done
     for(int slave=1; slave < numproc; ++slave){
       MPI_Recv(&worker, 1, MPI_INT, MPI_ANY_SOURCE, im_ready_tag, MPI_COMM_WORLD, &status);
@@ -113,14 +120,15 @@ int main(int argc, char * argv[]){
     }
   }
   else{
-    int line_num;
-    unsigned char* line = (unsigned char*)malloc( n_x*sizeof(unsigned char) );
+    int* line = (int*)malloc( 2 * sizeof(int)); // line[0] will contain the number of the first line to compute 
+                 // line[1] will contain the number of lines to compute          
+    unsigned char* buffer = (unsigned char*)malloc( ntpp*n_x*sizeof(unsigned char) );
     double x, y;
     double delta_x = (x_R - x_L)/(n_x - 1);
     double delta_y = (y_R - y_L)/(n_y - 1);
 
     /*
-#pragma omp parallel num_threads(4)
+#pragma omp parallel num_threads(ntpp)
     {
       int all = omp_get_num_threads();
       int me = omp_get_thread_num();
@@ -132,24 +140,26 @@ int main(int argc, char * argv[]){
       // say to master you're ready to work
       MPI_Send(&myid, 1, MPI_INT, root, im_ready_tag, MPI_COMM_WORLD);
       // listen your next job
-      MPI_Recv(&line_num, 1, MPI_INT, root, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+      MPI_Recv(line, 2, MPI_INT, root, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
       if(status.MPI_TAG == finish_tag){
 	break;
       }
-      // work with line_num
-      y = y_R - line_num * delta_y;
-#pragma omp parallel num_threads(2)
-      {
+      // work from line line[0] until line ( line[0] + line[1] - 1 )
+#pragma omp parallel num_threads(ntpp)
+	  {
 #pragma omp for schedule(guided)
-        for(unsigned int i = 0; i < n_x; ++i){
-  	  x = x_L + i*delta_x;
-	  line[i] = compute_mandelbrot(x, y, I_max);
-        }
+	for(unsigned int j=0; j < line[1]; j++){
+	  for(unsigned int i = 0; i < n_x; ++i){
+	    y = y_R - (line[0]+j) * delta_y;
+  	    x = x_L + i*delta_x;
+	    buffer[i + n_x*j] = compute_mandelbrot(x, y, I_max);
+          }
+	}
       }
       // write your results on file
-      MPI_File_write_at(file, (header_offset + line_num*n_x), line, n_x, MPI_UNSIGNED_CHAR, &status);
+	  MPI_File_write_at(file, (header_offset + line[0]*n_x), buffer, (n_x*line[1]), MPI_UNSIGNED_CHAR, &status);
     }
-    free(line);
+    free(buffer);
   }
 
   

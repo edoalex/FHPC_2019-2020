@@ -12,4 +12,4 @@ $(EXE): $(SRC)
 	$(CMPI) mpi.c -o mpi.x $(CFLAGS)
 	$(CMPI) hybrid.c -o hybrid.x $(CFLAGS) -fopenmp
 clean:
-	rm -f *~ *.o $(EXE)
+	rm -f *~ *.o *.x

@@ -30,7 +30,7 @@
 #define y_R_default 1.25
 #define n_x_default 4200
 #define n_y_default 3000
-#define BEST_CHUNK_SIZE 10
+#define BEST_CHUNK_DIVIDER 10
 
 int get_cpu_id( void );
 void write_pgm_image( void *image, int maxval, int xsize, int ysize, const char *image_name);
@@ -104,7 +104,7 @@ int main(int argc, char* argv[]){
   double delta_y = (y_R - y_L)/(n_y - 1);
   double x, y;
 
-#pragma omp parallel for collapse(2) schedule(dynamic, (n_x*n_y/nthreads)/ BEST_CHUNK_SIZE)
+#pragma omp parallel for collapse(2) schedule(dynamic, (n_x*n_y/nthreads)/ BEST_CHUNK_DIVIDER)
   for(unsigned int i=0; i<n_y; ++i){
     for(unsigned int j=0; j<n_x; ++j){
       // work with matrix[i*n_x + j] that is matrix[i][y]
