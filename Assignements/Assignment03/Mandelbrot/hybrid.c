@@ -109,10 +109,12 @@ int main(int argc, char * argv[]){
     line[0] += ntpp;
     }
     //send the final remaining (line[0] - n_y) < ntpp  lines to next and last process
+    line[1] = line[0] - n_y;    
+    if(line[1] > 0){
     line[0] -= 4;
-    line[1] = line[0] - n_y;
     MPI_Recv(&worker, 1, MPI_INT, MPI_ANY_SOURCE, im_ready_tag, MPI_COMM_WORLD, &status);
     MPI_Send(&line, 2, MPI_INT, worker, workpile_tag, MPI_COMM_WORLD);
+    }
     // send message with special tag to say we're done
     for(int slave=1; slave < numproc; ++slave){
       MPI_Recv(&worker, 1, MPI_INT, MPI_ANY_SOURCE, im_ready_tag, MPI_COMM_WORLD, &status);
